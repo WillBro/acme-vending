@@ -3,6 +3,7 @@ package com.acme.commerce.vendingmachine.impl;
 import com.acme.commerce.vendingmachine.Change;
 import com.acme.commerce.vendingmachine.Product;
 import com.acme.commerce.vendingmachine.VendingMachine;
+import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
 import com.acme.commerce.vendingmachine.exception.OutOfStockException;
 
 import java.util.*;
@@ -62,9 +63,15 @@ public class VendingMachineImpl implements VendingMachine {
     }
 
     @Override
-    public void purchase(Product product) throws OutOfStockException {
+    public void purchase(Product product) throws OutOfStockException, InsufficientChangeException {
+//        System.out.println(product.getCost() + " - " +  calculateChangeInserted());
+
         if (product.isOutOfStock()) {
             throw new OutOfStockException(100, "Sorry this product is out of stock");
+        }
+
+        if (calculateChangeInserted() < product.getCost()) {
+            throw new InsufficientChangeException(200, "Sorry you have not entered enough change to buy this product");
         }
     }
 
@@ -73,8 +80,7 @@ public class VendingMachineImpl implements VendingMachine {
      *
      * @param change
      */
-    private void addChange(Change change)
-    {
+    private void addChange(Change change) {
         if (this.changeInserted.containsKey(change)) {
             this.changeInserted.put(change, this.changeInserted.get(change) + 1);
         } else {
@@ -84,6 +90,7 @@ public class VendingMachineImpl implements VendingMachine {
 
     /**
      * Calculate, in pennies, the total value of change inserted
+     *
      * @return int Running total of value of inserted change
      */
     private int calculateChangeInserted() {
@@ -91,10 +98,10 @@ public class VendingMachineImpl implements VendingMachine {
 
         Iterator it = this.changeInserted.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
+            Map.Entry pair = (Map.Entry) it.next();
 
             int numberOfChangeType = (Integer) pair.getValue();
-            Change changeType =  Change.valueOf(pair.getKey().toString());
+            Change changeType = Change.valueOf(pair.getKey().toString());
             int valueOfChange = changeType.getValue();
 
             total = total + (numberOfChangeType * valueOfChange);

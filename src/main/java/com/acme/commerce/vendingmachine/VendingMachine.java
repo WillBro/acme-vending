@@ -1,5 +1,6 @@
 package com.acme.commerce.vendingmachine;
 
+import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
 import com.acme.commerce.vendingmachine.exception.OutOfStockException;
 
 import java.util.List;
@@ -15,5 +16,5 @@ public interface VendingMachine {
     List<Change> getChangeInserted();
     int refundChange();
     void reset();
-    void purchase(Product product) throws OutOfStockException;
+    void purchase(Product product) throws OutOfStockException, InsufficientChangeException;
 }
