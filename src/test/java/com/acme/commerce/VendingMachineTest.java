@@ -1,20 +1,18 @@
 package com.acme.commerce;
 
-import com.acme.commerce.vendingmachine.exception.ChangeNotAcceptedException;
-import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
-import com.acme.commerce.vendingmachine.impl.VendingMachineImpl;
 import com.acme.commerce.vendingmachine.Change;
 import com.acme.commerce.vendingmachine.Product;
 import com.acme.commerce.vendingmachine.VendingMachine;
+import com.acme.commerce.vendingmachine.exception.ChangeNotAcceptedException;
+import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
 import com.acme.commerce.vendingmachine.exception.OutOfStockException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
+import com.acme.commerce.vendingmachine.impl.VendingMachineImpl;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -43,6 +41,28 @@ public class VendingMachineTest {
 
         assertEquals(5 + 1 + 2 + 2 + 2 + 2 + 100, changeRunningTotal);
         assertEquals(5 + 1 + 2 + 2 + 2 + 2 + 100, vendingMachine.getBalance()); // Should both be the same result
+    }
+
+    @Test
+    public void defaultAcceptedCoinCountIsFour() {
+        VendingMachine vendingMachine = new VendingMachineImpl();
+        List<Change> acceptedChange = vendingMachine.getAcceptedChange();
+
+        assertTrue(4 == acceptedChange.size());
+    }
+
+    @Test
+    public void defaultAcceptedCoinList() {
+        List<Change> expectedList = new ArrayList<>();
+        expectedList.add(Change.TEN_PENCE);
+        expectedList.add(Change.TWENTY_PENCE);
+        expectedList.add(Change.FIFTY_PENCE);
+        expectedList.add(Change.ONE_POUND);
+
+        VendingMachine vendingMachine = new VendingMachineImpl();
+        List<Change> acceptedChange = vendingMachine.getAcceptedChange();
+
+        assert(acceptedChange.equals(expectedList));
     }
 
     @Test
@@ -86,8 +106,6 @@ public class VendingMachineTest {
 
         try {
             vendingMachine.insertChange(Change.TWO_POUND);
-
-            fail("Expected OutOfStockException"); // @todo Test this fail statement
         } catch (ChangeNotAcceptedException e) {
             // Purposefully left blank - for now.
 
