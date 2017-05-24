@@ -10,6 +10,7 @@ import java.util.Map;
  * @since 1.0
  */
 public interface VendingMachine {
+    boolean isPoweredOn();
     Map<Change, Integer> getChangeAvailable();
     int insertChange(Change change);
     List<Change> getChangeInserted();

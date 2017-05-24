@@ -1,5 +1,6 @@
 package com.acme.commerce;
 
+import com.acme.commerce.vendingmachine.exception.HumanException;
 import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
 import com.acme.commerce.vendingmachine.impl.VendingMachineImpl;
 import com.acme.commerce.vendingmachine.Change;
@@ -20,6 +21,40 @@ import static org.junit.Assert.*;
  * @since 1.0
  */
 public class VendingMachineTest {
+
+    private static final String INITIALISING_MESSAGE = "Welcome to your new ACME vending machine";
+
+    @Test
+    public void turnsOnWhenOff() {
+        boolean isOn = false;
+
+        assertTrue(isOn);
+    }
+
+    @Test
+    public void turnsOffWhenOn() {
+        boolean isOff = false;
+
+        assertTrue(isOff);
+    }
+
+    @Test
+    public void turnsOnDisplaysInitialisingMessage() {
+        assertTrue(INITIALISING_MESSAGE.equals(""));
+    }
+
+    @Test
+    public void acceptsChangeWhenOn() {
+        int runningTotal = 0;
+
+        assertTrue(runningTotal > 0);
+    }
+
+    @Test(expected = HumanException.class)
+    public void rejectsChangeWhenOff() {
+        // vendingMachine.insertChange(Change.FIVE_PENCE);
+    }
+
     @Test
     public void addingMoneyUpdatesTotal() {
         VendingMachine vendingMachine = new VendingMachineImpl();
@@ -120,8 +155,7 @@ public class VendingMachineTest {
     }
 
     @Test
-    public void cannotBuyIfNotEnoughChange()
-    {
+    public void cannotBuyIfNotEnoughChange() {
         VendingMachine vendingMachine = new VendingMachineImpl();
 
         // @todo Better reuse from an inner class (or fixtures) as this is code duplication
@@ -151,8 +185,6 @@ public class VendingMachineTest {
 
         try {
             vendingMachine.purchase(anExpensiveProduct);
-        } catch (InsufficientChangeException e) {
-            // @todo
         } catch (OutOfStockException oe) {
             fail("InsufficientChangeException In");
         }
