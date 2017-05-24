@@ -1,5 +1,6 @@
 package com.acme.commerce;
 
+import com.acme.commerce.vendingmachine.exception.ChangeNotAcceptedException;
 import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
 import com.acme.commerce.vendingmachine.impl.VendingMachineImpl;
 import com.acme.commerce.vendingmachine.Change;
@@ -10,8 +11,11 @@ import com.acme.commerce.vendingmachine.exception.OutOfStockException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -25,13 +29,17 @@ public class VendingMachineTest {
         VendingMachine vendingMachine = new VendingMachineImpl();
         int changeRunningTotal = 0;
 
-        vendingMachine.insertChange(Change.FIVE_PENCE);
-        vendingMachine.insertChange(Change.ONE_PENCE);
-        vendingMachine.insertChange(Change.TWO_PENCE);
-        vendingMachine.insertChange(Change.TWO_PENCE);
-        vendingMachine.insertChange(Change.TWO_PENCE);
-        vendingMachine.insertChange(Change.TWO_PENCE);
-        changeRunningTotal = vendingMachine.insertChange(Change.ONE_POUND);
+        try {
+            vendingMachine.insertChange(Change.FIVE_PENCE);
+            vendingMachine.insertChange(Change.ONE_PENCE);
+            vendingMachine.insertChange(Change.TWO_PENCE);
+            vendingMachine.insertChange(Change.TWO_PENCE);
+            vendingMachine.insertChange(Change.TWO_PENCE);
+            vendingMachine.insertChange(Change.TWO_PENCE);
+            changeRunningTotal = vendingMachine.insertChange(Change.ONE_POUND);
+        } catch (ChangeNotAcceptedException e) {
+            // @todo Determine what to do in this instance.
+        }
 
         assertEquals(5 + 1 + 2 + 2 + 2 + 2 + 100, changeRunningTotal);
         assertEquals(5 + 1 + 2 + 2 + 2 + 2 + 100, vendingMachine.getBalance()); // Should both be the same result
@@ -40,7 +48,11 @@ public class VendingMachineTest {
     @Test
     public void refundingResetsChangeInMachineToZero() {
         VendingMachine vendingMachine = new VendingMachineImpl();
-        vendingMachine.insertChange(Change.FIFTY_PENCE);
+        try {
+            vendingMachine.insertChange(Change.FIFTY_PENCE);
+        } catch (ChangeNotAcceptedException e) {
+            // @todo Determine what to do in this instance.
+        }
 
         int machineChangeAfterRefund = vendingMachine.refundChange();
 
@@ -72,15 +84,19 @@ public class VendingMachineTest {
             }
         };
 
-        vendingMachine.insertChange(Change.TWO_POUND);
+        try {
+            vendingMachine.insertChange(Change.TWO_POUND);
+
+            fail("Expected OutOfStockException"); // @todo Test this fail statement
+        } catch (ChangeNotAcceptedException e) {
+            // Purposefully left blank - for now.
+
+        }
 
         try {
             vendingMachine.purchase(productCola);
-
-            fail("Expected OutOfStockException");
-
-        } catch (Exception e) {
-            // Purposefully lefy blank.
+        } catch (OutOfStockException eOos) {
+            // Purposefully left blank - for now.
         }
     }
 
@@ -111,18 +127,21 @@ public class VendingMachineTest {
             }
         };
 
-        vendingMachine.insertChange(Change.TWO_POUND);
+        try {
+            vendingMachine.insertChange(Change.TWO_POUND);
+        } catch (ChangeNotAcceptedException e) {
+            // @todo Log?
+        }
 
         try {
             vendingMachine.purchase(anInstockProduct);
-        } catch (Exception e) {
-
+        } catch (OutOfStockException e) {
+            // @todo Log?
         }
     }
 
     @Test
-    public void cannotBuyIfNotEnoughChange()
-    {
+    public void cannotBuyIfNotEnoughChange() {
         VendingMachine vendingMachine = new VendingMachineImpl();
 
         // @todo Better reuse from an inner class (or fixtures) as this is code duplication
@@ -148,14 +167,59 @@ public class VendingMachineTest {
             }
         };
 
-        vendingMachine.insertChange(Change.TWO_POUND);
-
         try {
+            purchaseTransaction(vendingMachine, anExpensiveProduct, Change.TWO_POUND);
+
             vendingMachine.purchase(anExpensiveProduct);
         } catch (InsufficientChangeException e) {
             // @todo
         } catch (OutOfStockException oe) {
             fail("InsufficientChangeException In");
+        } catch (ChangeNotAcceptedException eChange) {
+            // @todo Log?
         }
+    }
+
+    /**
+     * Convenience method to purchasing a product using a single coin
+     *
+     * @param vendingMachine
+     * @param product
+     * @param change
+     * @throws OutOfStockException
+     * @throws InsufficientChangeException
+     * @throws ChangeNotAcceptedException
+     */
+    @Ignore
+    protected void purchaseTransaction(VendingMachine vendingMachine, Product product, Change change) throws OutOfStockException, InsufficientChangeException, ChangeNotAcceptedException {
+        Map<Change, Integer> listOfChange = new HashMap<>();
+        listOfChange.put(change, 1);
+
+        purchaseTransaction(vendingMachine, product, listOfChange);
+    }
+
+
+    /**
+     * Convenience to buy a product using multiple added coins
+     *
+     * @param vendingMachine
+     * @param product
+     * @param insertChange
+     * @throws OutOfStockException
+     * @throws InsufficientChangeException
+     * @throws ChangeNotAcceptedException
+     */
+    @Ignore
+    protected void purchaseTransaction(VendingMachine vendingMachine, Product product, Map<Change, Integer> insertChange) throws OutOfStockException, InsufficientChangeException, ChangeNotAcceptedException {
+        for (Map.Entry<Change, Integer> entry : insertChange.entrySet()) {
+            Change change = entry.getKey();
+            Integer countCoins = entry.getValue();
+
+            for (int i = 0; i < countCoins; i++) {
+                vendingMachine.insertChange(change);
+            }
+        }
+
+        vendingMachine.purchase(product);
     }
 }
