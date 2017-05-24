@@ -22,6 +22,37 @@ import static org.junit.Assert.*;
  * @since 1.0
  */
 public class VendingMachineTest {
+
+    @Test
+    public void defaultVendingMachineIsOff()
+    {
+        VendingMachine vendingMachine = new VendingMachineImpl();
+
+        assertFalse(vendingMachine.isPoweredOn());
+    }
+
+    @Test
+    public void turnsOnWhenOff() {
+        VendingMachine vendingMachine = new VendingMachineImpl();
+        boolean isOn = vendingMachine.isPoweredOn();
+
+        assertFalse(isOn); // potentially redundant as default constructor is tested above?
+
+        vendingMachine.powerOn();
+
+        assertTrue(vendingMachine.isPoweredOn());
+    }
+
+    @Test
+    public void turnsOffWhenOn() {
+        VendingMachine vendingMachine = new VendingMachineImpl(true); // already on
+        assertTrue(vendingMachine.isPoweredOn());
+
+        vendingMachine.powerOff();
+
+        assertFalse(vendingMachine.isPoweredOn());
+    }
+
     @Test
     public void addingMoneyUpdatesTotal() {
         VendingMachine vendingMachine = new VendingMachineImpl();
@@ -203,12 +234,8 @@ public class VendingMachineTest {
             purchaseTransaction(vendingMachine, anExpensiveProduct, Change.TWO_POUND);
 
             vendingMachine.purchase(anExpensiveProduct);
-        } catch (InsufficientChangeException e) {
-            // @todo
-        } catch (OutOfStockException oe) {
-            fail("InsufficientChangeException In");
-        } catch (ChangeNotAcceptedException eChange) {
-            // @todo Log?
+        } catch (OutOfStockException|InsufficientChangeException|ChangeNotAcceptedException e) {
+            // @todo Determine if this is the best approach
         }
     }
 

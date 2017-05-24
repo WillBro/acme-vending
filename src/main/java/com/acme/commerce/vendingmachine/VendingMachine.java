@@ -13,6 +13,9 @@ import java.util.Map;
  */
 public interface VendingMachine {
     List<Change> getAcceptedChange();
+    boolean isPoweredOn();
+    void powerOn();
+    void powerOff();
     int getBalance();
     Map<Change, Integer> getChangeAvailable();
     int insertChange(Change change) throws ChangeNotAcceptedException;
