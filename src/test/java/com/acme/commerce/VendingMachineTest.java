@@ -36,11 +36,25 @@ public class VendingMachineTest {
             vendingMachine.insertChange(Change.TEN_PENCE);
             changeRunningTotal = vendingMachine.insertChange(Change.ONE_POUND);
         } catch (ChangeNotAcceptedException e) {
-            // @todo Determine what to do in this instance.
+            // Hopefully we're inserting all the correct change in this test.
         }
 
         assertEquals(60 + 100, changeRunningTotal);
         assertEquals(10 + 10 + 10 + 10 + 10 + 10 + 100, vendingMachine.getBalance()); // Should both be the same result
+    }
+
+    @Test
+    public void addingUnacceptedChangeIsNotAllowed() {
+        VendingMachine vendingMachine = new VendingMachineImpl();
+        int changeRunningTotal = 0;
+
+        try {
+            changeRunningTotal = vendingMachine.insertChange(Change.ONE_PENCE);
+
+            fail("ChangeNotAcceptedException was expected.");
+        } catch (ChangeNotAcceptedException e) {
+            // Empty body - exists due to fail above being executed only when we don't arrive in this exception.
+        }
     }
 
     @Test
