@@ -2,10 +2,13 @@ package com.acme.commerce.vendingmachine.impl;
 
 import com.acme.commerce.vendingmachine.Change;
 import com.acme.commerce.vendingmachine.Product;
+import com.acme.commerce.vendingmachine.ProductFactory;
 import com.acme.commerce.vendingmachine.VendingMachine;
 import com.acme.commerce.vendingmachine.exception.ChangeNotAcceptedException;
+import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
 import com.acme.commerce.vendingmachine.exception.OutOfStockException;
 
+import java.text.NumberFormat;
 import java.util.*;
 
 /**
@@ -19,21 +22,15 @@ public class VendingMachineImpl implements VendingMachine {
     private Map<Change, Integer> changeAvailable = new EnumMap<>(Change.class);
     private Map<Change, Integer> changeInserted = new HashMap<>();
     private List<Change> acceptedCoins = new ArrayList<>();
-//    private static final ImmutableList<Change> acceptedChangeList = new ImmutableList.Builder<Change>()
-//            .add(Change.TEN_PENCE)
-//            .add(Change.TWENTY_PENCE)
-//            .add(Change.FIFTY_PENCE)
-//            .add(Change.ONE_POUND)
-//        .build();
-
+    private Map<String, Product> availableProducts = null;
 
     /**
      * Default Vending Machine with 5 of all change types
      */
     public VendingMachineImpl() {
         this.isPoweredOn = false;
-        this.changeInserted = new HashMap<>();
-        this.changeAvailable = new HashMap<>();
+        this.changeInserted = new EnumMap<Change, Integer>(Change.class);
+        this.changeAvailable = new EnumMap<Change, Integer>(Change.class);
 
         this.changeAvailable.put(Change.TEN_PENCE, 5);
         this.changeAvailable.put(Change.TWENTY_PENCE, 5);
@@ -45,6 +42,26 @@ public class VendingMachineImpl implements VendingMachine {
         this.acceptedCoins.add(Change.TWENTY_PENCE);
         this.acceptedCoins.add(Change.FIFTY_PENCE);
         this.acceptedCoins.add(Change.ONE_POUND);
+
+        Product aProduct = ProductFactory.createProduct("A nice product", 60, 10);
+        Product bProduct = ProductFactory.createProduct("A berry nice product", 100, 4);
+        Product cProduct = ProductFactory.createProduct("A cherry berry nice product", 170, 1);
+
+        availableProducts = new HashMap<>();
+        availableProducts.put("A", aProduct);
+        availableProducts.put("B", bProduct);
+        availableProducts.put("C", cProduct);
+    }
+
+    /**
+     * Default, powered on, vending machine
+     *
+     * @param isOn boolean Initial power state of the new machine
+     */
+    public VendingMachineImpl(boolean isOn) {
+        this();
+
+        this.isPoweredOn = isOn;
     }
 
     @Override
@@ -55,17 +72,6 @@ public class VendingMachineImpl implements VendingMachine {
     @Override
     public int getBalance() {
         return calculateChangeInserted();
-    }
-
-    /**
-     * Default, powered on, vending machine
-     *
-     * @param isOn boolean Initial power state of the new machine
-     */
-    public VendingMachineImpl(boolean isOn) {
-        super();
-
-        this.isPoweredOn = isOn;
     }
 
     @Override
@@ -128,9 +134,24 @@ public class VendingMachineImpl implements VendingMachine {
     }
 
     @Override
-    public void purchase(Product product) throws OutOfStockException {
+    public void purchase(Product product) throws OutOfStockException, InsufficientChangeException {
         if (product.isOutOfStock()) {
             throw new OutOfStockException(100, "Sorry this product is out of stock");
+        }
+
+        int changeToCostDifference = calculateChangeInserted() - product.getCost();
+
+        // Not enough funds to buy product
+        if (changeToCostDifference < 0) {
+            NumberFormat n = NumberFormat.getCurrencyInstance(Locale.UK);
+            String stringChangeDifference = n.format((changeToCostDifference / 100.0) * -1); // bring negative back to positive
+
+            throw new InsufficientChangeException("You have not entered enough change to buy that product " +
+            " please insert " + stringChangeDifference + " more to purchase your product.");
+        } else {
+            // Product has stock and customer has paid enough for product
+            // @todo Remove this from the machines inventory
+            // @todo Return the remaining change to the customer
         }
     }
 
@@ -167,5 +188,10 @@ public class VendingMachineImpl implements VendingMachine {
         }
 
         return total;
+    }
+
+    @Override
+    public Map<String, Product> getProductList() {
+        return this.availableProducts;
     }
 }

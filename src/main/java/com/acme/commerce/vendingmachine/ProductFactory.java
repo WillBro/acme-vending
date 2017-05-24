@@ -9,6 +9,10 @@ import com.acme.commerce.vendingmachine.impl.ProductImpl;
  * @since 1.0
  */
 public class ProductFactory {
+    public static Product createProduct(String name, int cost) {
+        return ProductFactory.createProduct(name, cost, 1);
+    }
+
     public static Product createProduct(String name, int cost, int quantity) {
         return new ProductImpl(name, cost, quantity);
     }

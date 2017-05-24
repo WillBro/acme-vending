@@ -2,6 +2,7 @@ package com.acme.commerce;
 
 import com.acme.commerce.vendingmachine.Change;
 import com.acme.commerce.vendingmachine.Product;
+import com.acme.commerce.vendingmachine.ProductFactory;
 import com.acme.commerce.vendingmachine.VendingMachine;
 import com.acme.commerce.vendingmachine.exception.ChangeNotAcceptedException;
 import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
@@ -24,8 +25,7 @@ import static org.junit.Assert.*;
 public class VendingMachineTest {
 
     @Test
-    public void defaultVendingMachineIsOff()
-    {
+    public void defaultVendingMachineIsOff() {
         VendingMachine vendingMachine = new VendingMachineImpl();
 
         assertFalse(vendingMachine.isPoweredOn());
@@ -57,7 +57,17 @@ public class VendingMachineTest {
     public void thereAreThreeProductsByDefault() {
         VendingMachine vendingMachine = new VendingMachineImpl(true);
 
-        assert(3 == vendingMachine.getProductList().size());
+        assert (3 == vendingMachine.getProductList().size());
+    }
+
+    @Test
+    public void theDefaultProductsMeetRequirements() {
+        // Possibly better a functional test?
+        VendingMachine vendingMachine = new VendingMachineImpl(true);
+
+        Map<String, Product> defaultProducts = getDefaultProducts();
+
+        assert(defaultProducts.equals(vendingMachine.getProductList()));
     }
 
     @Test
@@ -113,7 +123,7 @@ public class VendingMachineTest {
         VendingMachine vendingMachine = new VendingMachineImpl();
         List<Change> acceptedChange = vendingMachine.getAcceptedChange();
 
-        assert(acceptedChange.equals(expectedList));
+        assert (acceptedChange.equals(expectedList));
     }
 
     @Test
@@ -133,39 +143,17 @@ public class VendingMachineTest {
     @Test()
     public void cannotBuyOutOfStockProduct() {
         VendingMachine vendingMachine = new VendingMachineImpl();
-        Product productCola = new Product() {
-            @Override
-            public String getName() {
-                return "Coca Cola";
-            }
 
-            @Override
-            public int getCost() {
-                return 120;
-            }
 
-            @Override
-            public int getQuantityAvailable() {
-                return 0;
-            }
-
-            @Override
-            public boolean isOutOfStock() {
-                return getQuantityAvailable() == 0;
-            }
-        };
+        Product outOfStockProduct = ProductFactory.createProduct("An Out of stock product ", 60, 0);
 
         try {
-            vendingMachine.insertChange(Change.TWO_POUND);
-        } catch (ChangeNotAcceptedException e) {
-            // Purposefully left blank - for now.
-
-        }
-
-        try {
-            vendingMachine.purchase(productCola);
-        } catch (OutOfStockException eOos) {
-            // Purposefully left blank - for now.
+            purchaseTransaction(vendingMachine, outOfStockProduct, Change.FIFTY_PENCE);
+        } catch (OutOfStockException | ChangeNotAcceptedException e) {
+            // @todo Determine if this is the best approach
+            System.out.println(e.getMessage());
+        } catch (InsufficientChangeException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -173,75 +161,31 @@ public class VendingMachineTest {
     public void canBuyInStockProduct() {
         VendingMachine vendingMachine = new VendingMachineImpl();
 
-        // @todo Better reuse from an inner class (or fixtures) as this is code duplication
-        Product anInstockProduct = new Product() {
-            @Override
-            public String getName() {
-                return "Coca Cola";
-            }
-
-            @Override
-            public int getCost() {
-                return 120;
-            }
-
-            @Override
-            public int getQuantityAvailable() {
-                return 5;
-            }
-
-            @Override
-            public boolean isOutOfStock() {
-                return getQuantityAvailable() == 0;
-            }
-        };
+        Product anInstockProduct = ProductFactory.createProduct("An Out of stock product ", 60, 10);
 
         try {
-            vendingMachine.insertChange(Change.TWO_POUND);
-        } catch (ChangeNotAcceptedException e) {
-            // @todo Log?
-        }
-
-        try {
-            vendingMachine.purchase(anInstockProduct);
-        } catch (OutOfStockException e) {
-            // @todo Log?
+            purchaseTransaction(vendingMachine, anInstockProduct, Change.FIFTY_PENCE);
+        } catch (OutOfStockException | ChangeNotAcceptedException e) {
+            // @todo Determine if this is the best approach
+            System.out.println(e.getMessage());
+        } catch (InsufficientChangeException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     @Test
     public void cannotBuyIfNotEnoughChange() {
-        VendingMachine vendingMachine = new VendingMachineImpl();
+        VendingMachine vendingMachine = new VendingMachineImpl(true);
 
-        // @todo Better reuse from an inner class (or fixtures) as this is code duplication
-        Product anExpensiveProduct = new Product() {
-            @Override
-            public String getName() {
-                return "Really Expensive Produc";
-            }
-
-            @Override
-            public int getCost() {
-                return 1299;
-            }
-
-            @Override
-            public int getQuantityAvailable() {
-                return 5;
-            }
-
-            @Override
-            public boolean isOutOfStock() {
-                return getQuantityAvailable() == 0;
-            }
-        };
+        Product aProduct = ProductFactory.createProduct("A product", 170);
 
         try {
-            purchaseTransaction(vendingMachine, anExpensiveProduct, Change.TWO_POUND);
-
-            vendingMachine.purchase(anExpensiveProduct);
-        } catch (OutOfStockException|InsufficientChangeException|ChangeNotAcceptedException e) {
+            purchaseTransaction(vendingMachine, aProduct, Change.FIFTY_PENCE);
+        } catch (OutOfStockException | ChangeNotAcceptedException e) {
             // @todo Determine if this is the best approach
+            System.out.println(e.getMessage());
+        } catch (InsufficientChangeException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -286,5 +230,24 @@ public class VendingMachineTest {
         }
 
         vendingMachine.purchase(product);
+    }
+
+    /**
+     * Get default selection of products as per user requirements
+     *
+     * @return
+     */
+    @Ignore
+    protected Map<String, Product> getDefaultProducts() {
+        Product aProduct = ProductFactory.createProduct("A nice product", 60, 10);
+        Product bProduct = ProductFactory.createProduct("A berry nice product", 100, 4);
+        Product cProduct = ProductFactory.createProduct("A cherry berry nice product", 170, 1);
+
+        Map<String, Product> availableProducts = new HashMap<>();
+        availableProducts.put("A", aProduct);
+        availableProducts.put("B", bProduct);
+        availableProducts.put("C", cProduct);
+
+        return availableProducts;
     }
 }
