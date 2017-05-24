@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public interface VendingMachine {
     Map<Change, Integer> getChangeAvailable();
-    long insertChange(Change c);
+    int insertChange(Change c);
     List<Change> getChangeInserted();
     void refundChange();
     void reset();

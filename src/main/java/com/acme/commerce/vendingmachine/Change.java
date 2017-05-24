@@ -10,7 +10,11 @@ public enum Change {
 
     private int value;
 
-    Change(int value) {
+    private Change(int value) {
         this.value = value;
+    }
+
+    public int getValue() {
+        return this.value;
     }
 }
