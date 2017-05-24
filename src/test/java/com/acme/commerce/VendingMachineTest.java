@@ -1,6 +1,6 @@
 package com.acme.commerce;
 
-import com.acme.commerce.mock.VendingMachineImpl;
+import com.acme.commerce.vendingmachine.impl.VendingMachineImpl;
 import com.acme.commerce.vendingmachine.Change;
 import com.acme.commerce.vendingmachine.Product;
 import com.acme.commerce.vendingmachine.VendingMachine;
@@ -27,12 +27,21 @@ public class VendingMachineTest {
         vendingMachine.insertChange(Change.TWO_PENCE);
         changeRunningTotal = vendingMachine.insertChange(Change.ONE_POUND);
 
-        assertEquals(5+1+2+2+2+2+100, changeRunningTotal);
+        assertEquals(5 + 1 + 2 + 2 + 2 + 2 + 100, changeRunningTotal);
+    }
+
+    @Test
+    public void refundingResetsChangeInMachineToZero() {
+        VendingMachine vendingMachine = new VendingMachineImpl();
+        vendingMachine.insertChange(Change.FIFTY_PENCE);
+
+        int machineChangeAfterRefund = vendingMachine.refundChange();
+
+        assertEquals(0, machineChangeAfterRefund);
     }
 
     @Test()
-    public void cannotBuyOutOfStockProduct()
-    {
+    public void cannotBuyOutOfStockProduct() {
         VendingMachine vendingMachine = new VendingMachineImpl();
         Product productCola = new Product() {
             @Override

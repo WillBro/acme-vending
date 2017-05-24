@@ -20,6 +20,15 @@ public class VendingMachineImpl implements VendingMachine {
     public VendingMachineImpl() {
         this.changeInserted = new HashMap<>();
         this.changeAvailable = new HashMap<>();
+
+        this.changeAvailable.put(Change.ONE_PENCE, 5);
+        this.changeAvailable.put(Change.TWO_PENCE, 5);
+        this.changeAvailable.put(Change.FIVE_PENCE, 5);
+        this.changeAvailable.put(Change.TEN_PENCE, 5);
+        this.changeAvailable.put(Change.TWENTY_PENCE, 5);
+        this.changeAvailable.put(Change.FIFTY_PENCE, 5);
+        this.changeAvailable.put(Change.ONE_POUND, 5);
+        this.changeAvailable.put(Change.TWO_POUND, 5);
     }
 
     @Override

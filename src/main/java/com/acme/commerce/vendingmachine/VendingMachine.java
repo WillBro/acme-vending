@@ -13,7 +13,7 @@ public interface VendingMachine {
     Map<Change, Integer> getChangeAvailable();
     int insertChange(Change change);
     List<Change> getChangeInserted();
-    void refundChange();
+    int refundChange();
     void reset();
     void purchase(Product product) throws OutOfStockException;
 }
