@@ -22,33 +22,34 @@ import static org.junit.Assert.*;
  */
 public class VendingMachineTest {
 
-    private static final String INITIALISING_MESSAGE = "Welcome to your new ACME vending machine";
-
     @Test
     public void defaultVendingMachineIsOff()
     {
-        boolean isOn = true;
+        VendingMachine vendingMachine = new VendingMachineImpl();
 
-        assertFalse(isOn);
+        assertFalse(vendingMachine.isPoweredOn());
     }
 
     @Test
     public void turnsOnWhenOff() {
-        boolean isOn = false;
+        VendingMachine vendingMachine = new VendingMachineImpl();
+        boolean isOn = vendingMachine.isPoweredOn();
 
-        assertTrue(isOn);
+        assertFalse(isOn); // potentially redundant as default constructor is tested above?
+
+        vendingMachine.powerOn();
+
+        assertTrue(vendingMachine.isPoweredOn());
     }
 
     @Test
     public void turnsOffWhenOn() {
-        boolean isOff = false;
+        VendingMachine vendingMachine = new VendingMachineImpl(true);
+        assertTrue(vendingMachine.isPoweredOn());
 
-        assertTrue(isOff);
-    }
+        vendingMachine.powerOff();
 
-    @Test
-    public void turnsOnDisplaysInitialisingMessage() {
-        assertTrue(INITIALISING_MESSAGE.equals(""));
+        assertFalse(vendingMachine.isPoweredOn());
     }
 
     @Test
