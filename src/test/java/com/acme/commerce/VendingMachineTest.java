@@ -54,6 +54,13 @@ public class VendingMachineTest {
     }
 
     @Test
+    public void thereAreThreeProductsByDefault() {
+        VendingMachine vendingMachine = new VendingMachineImpl(true);
+
+        assert(3 == vendingMachine.getProductList().size());
+    }
+
+    @Test
     public void addingMoneyUpdatesTotal() {
         VendingMachine vendingMachine = new VendingMachineImpl();
         int changeRunningTotal = 0;
@@ -77,10 +84,9 @@ public class VendingMachineTest {
     @Test
     public void addingUnacceptedChangeIsNotAllowed() {
         VendingMachine vendingMachine = new VendingMachineImpl();
-        int changeRunningTotal = 0;
 
         try {
-            changeRunningTotal = vendingMachine.insertChange(Change.ONE_PENCE);
+            vendingMachine.insertChange(Change.ONE_PENCE);
 
             fail("ChangeNotAcceptedException was expected.");
         } catch (ChangeNotAcceptedException e) {
