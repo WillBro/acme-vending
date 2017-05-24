@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public interface VendingMachine {
     boolean isPoweredOn();
+    void powerOn();
+    void powerOff();
     Map<Change, Integer> getChangeAvailable();
     int insertChange(Change change);
     List<Change> getChangeInserted();
