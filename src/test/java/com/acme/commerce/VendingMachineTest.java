@@ -25,6 +25,14 @@ public class VendingMachineTest {
     private static final String INITIALISING_MESSAGE = "Welcome to your new ACME vending machine";
 
     @Test
+    public void defaultVendingMachineIsOff()
+    {
+        boolean isOn = true;
+
+        assertFalse(isOn);
+    }
+
+    @Test
     public void turnsOnWhenOff() {
         boolean isOn = false;
 
