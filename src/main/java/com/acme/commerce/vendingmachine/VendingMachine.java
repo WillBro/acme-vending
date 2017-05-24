@@ -1,5 +1,7 @@
 package com.acme.commerce.vendingmachine;
 
+import com.acme.commerce.vendingmachine.exception.OutOfStockException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -9,8 +11,9 @@ import java.util.Map;
  */
 public interface VendingMachine {
     Map<Change, Integer> getChangeAvailable();
-    int insertChange(Change c);
+    int insertChange(Change change);
     List<Change> getChangeInserted();
     void refundChange();
     void reset();
+    void purchase(Product product) throws OutOfStockException;
 }
