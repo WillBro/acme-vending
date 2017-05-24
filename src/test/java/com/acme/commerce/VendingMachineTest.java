@@ -34,6 +34,7 @@ public class VendingMachineTest {
         changeRunningTotal = vendingMachine.insertChange(Change.ONE_POUND);
 
         assertEquals(5 + 1 + 2 + 2 + 2 + 2 + 100, changeRunningTotal);
+        assertEquals(5 + 1 + 2 + 2 + 2 + 2 + 100, vendingMachine.getBalance()); // Should both be the same result
     }
 
     @Test

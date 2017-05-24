@@ -32,6 +32,11 @@ public class VendingMachineImpl implements VendingMachine {
     }
 
     @Override
+    public int getBalance() {
+        return calculateChangeInserted();
+    }
+
+    @Override
     public Map<Change, Integer> getChangeAvailable() {
         return changeAvailable;
     }
