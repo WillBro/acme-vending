@@ -1,17 +1,11 @@
 package com.acme.commerce;
 
-import com.acme.commerce.vendingmachine.exception.HumanException;
-import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
-import com.acme.commerce.vendingmachine.impl.VendingMachineImpl;
 import com.acme.commerce.vendingmachine.Change;
 import com.acme.commerce.vendingmachine.Product;
 import com.acme.commerce.vendingmachine.VendingMachine;
+import com.acme.commerce.vendingmachine.exception.HumanException;
 import com.acme.commerce.vendingmachine.exception.OutOfStockException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import org.junit.Assert;
+import com.acme.commerce.vendingmachine.impl.VendingMachineImpl;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -44,24 +38,12 @@ public class VendingMachineTest {
 
     @Test
     public void turnsOffWhenOn() {
-        VendingMachine vendingMachine = new VendingMachineImpl(true);
+        VendingMachine vendingMachine = new VendingMachineImpl(true); // already on
         assertTrue(vendingMachine.isPoweredOn());
 
         vendingMachine.powerOff();
 
         assertFalse(vendingMachine.isPoweredOn());
-    }
-
-    @Test
-    public void acceptsChangeWhenOn() {
-        int runningTotal = 0;
-
-        assertTrue(runningTotal > 0);
-    }
-
-    @Test(expected = HumanException.class)
-    public void rejectsChangeWhenOff() {
-        // vendingMachine.insertChange(Change.FIVE_PENCE);
     }
 
     @Test
