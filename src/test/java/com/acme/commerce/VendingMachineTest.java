@@ -1,10 +1,16 @@
 package com.acme.commerce;
 
+import com.acme.commerce.vendingmachine.exception.InsufficientChangeException;
 import com.acme.commerce.vendingmachine.impl.VendingMachineImpl;
 import com.acme.commerce.vendingmachine.Change;
 import com.acme.commerce.vendingmachine.Product;
 import com.acme.commerce.vendingmachine.VendingMachine;
 import com.acme.commerce.vendingmachine.exception.OutOfStockException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -72,8 +78,83 @@ public class VendingMachineTest {
 
             fail("Expected OutOfStockException");
 
-        } catch (OutOfStockException e) {
+        } catch (Exception e) {
             // Purposefully lefy blank.
+        }
+    }
+
+    @Test
+    public void canBuyInStockProduct() {
+        VendingMachine vendingMachine = new VendingMachineImpl();
+
+        // @todo Better reuse from an inner class (or fixtures) as this is code duplication
+        Product anInstockProduct = new Product() {
+            @Override
+            public String getName() {
+                return "Coca Cola";
+            }
+
+            @Override
+            public int getCost() {
+                return 120;
+            }
+
+            @Override
+            public int getQuantityAvailable() {
+                return 5;
+            }
+
+            @Override
+            public boolean isOutOfStock() {
+                return getQuantityAvailable() == 0;
+            }
+        };
+
+        vendingMachine.insertChange(Change.TWO_POUND);
+
+        try {
+            vendingMachine.purchase(anInstockProduct);
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Test
+    public void cannotBuyIfNotEnoughChange()
+    {
+        VendingMachine vendingMachine = new VendingMachineImpl();
+
+        // @todo Better reuse from an inner class (or fixtures) as this is code duplication
+        Product anExpensiveProduct = new Product() {
+            @Override
+            public String getName() {
+                return "Really Expensive Produc";
+            }
+
+            @Override
+            public int getCost() {
+                return 1299;
+            }
+
+            @Override
+            public int getQuantityAvailable() {
+                return 5;
+            }
+
+            @Override
+            public boolean isOutOfStock() {
+                return getQuantityAvailable() == 0;
+            }
+        };
+
+        vendingMachine.insertChange(Change.TWO_POUND);
+
+        try {
+            vendingMachine.purchase(anExpensiveProduct);
+        } catch (InsufficientChangeException e) {
+            // @todo
+        } catch (OutOfStockException oe) {
+            fail("InsufficientChangeException In");
         }
     }
 }
