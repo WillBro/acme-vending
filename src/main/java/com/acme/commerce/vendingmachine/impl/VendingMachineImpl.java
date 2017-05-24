@@ -16,19 +16,34 @@ import java.util.*;
 public class VendingMachineImpl implements VendingMachine {
     private Map<Change, Integer> changeAvailable = new EnumMap<>(Change.class);
     private Map<Change, Integer> changeInserted = new HashMap<>();
+    private List<Change> acceptedCoins = new ArrayList<>();
+//    private static final ImmutableList<Change> acceptedChangeList = new ImmutableList.Builder<Change>()
+//            .add(Change.TEN_PENCE)
+//            .add(Change.TWENTY_PENCE)
+//            .add(Change.FIFTY_PENCE)
+//            .add(Change.ONE_POUND)
+//        .build();
+
 
     public VendingMachineImpl() {
         this.changeInserted = new HashMap<>();
         this.changeAvailable = new HashMap<>();
 
-        this.changeAvailable.put(Change.ONE_PENCE, 5);
-        this.changeAvailable.put(Change.TWO_PENCE, 5);
-        this.changeAvailable.put(Change.FIVE_PENCE, 5);
         this.changeAvailable.put(Change.TEN_PENCE, 5);
         this.changeAvailable.put(Change.TWENTY_PENCE, 5);
         this.changeAvailable.put(Change.FIFTY_PENCE, 5);
         this.changeAvailable.put(Change.ONE_POUND, 5);
-        this.changeAvailable.put(Change.TWO_POUND, 5);
+
+        this.acceptedCoins = new ArrayList<>();
+        this.acceptedCoins.add(Change.TEN_PENCE);
+        this.acceptedCoins.add(Change.TWENTY_PENCE);
+        this.acceptedCoins.add(Change.FIFTY_PENCE);
+        this.acceptedCoins.add(Change.ONE_POUND);
+    }
+
+    @Override
+    public List<Change> getAcceptedChange() {
+        return this.acceptedCoins;
     }
 
     @Override
@@ -49,8 +64,8 @@ public class VendingMachineImpl implements VendingMachine {
     }
 
     @Override
-    public List<Change> getChangeInserted() {
-        return null;
+    public List<Change> getChangeInserted() throws RuntimeException {
+        throw new RuntimeException("Not implemented yet");
     }
 
     @Override
@@ -78,8 +93,7 @@ public class VendingMachineImpl implements VendingMachine {
      *
      * @param change
      */
-    private void addChange(Change change)
-    {
+    private void addChange(Change change) {
         if (this.changeInserted.containsKey(change)) {
             this.changeInserted.put(change, this.changeInserted.get(change) + 1);
         } else {
@@ -89,6 +103,7 @@ public class VendingMachineImpl implements VendingMachine {
 
     /**
      * Calculate, in pennies, the total value of change inserted
+     *
      * @return int Running total of value of inserted change
      */
     private int calculateChangeInserted() {
@@ -96,10 +111,10 @@ public class VendingMachineImpl implements VendingMachine {
 
         Iterator it = this.changeInserted.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
+            Map.Entry pair = (Map.Entry) it.next();
 
             int numberOfChangeType = (Integer) pair.getValue();
-            Change changeType =  Change.valueOf(pair.getKey().toString());
+            Change changeType = Change.valueOf(pair.getKey().toString());
             int valueOfChange = changeType.getValue();
 
             total = total + (numberOfChangeType * valueOfChange);
