@@ -14,10 +14,15 @@ import java.util.*;
  * @since 1.0
  */
 public class VendingMachineImpl implements VendingMachine {
+    private boolean isPoweredOn = false;
     private Map<Change, Integer> changeAvailable = new EnumMap<>(Change.class);
     private Map<Change, Integer> changeInserted = new HashMap<>();
 
+    /**
+     * Default Vending Machine with 5 of all change types
+     */
     public VendingMachineImpl() {
+        this.isPoweredOn = false;
         this.changeInserted = new HashMap<>();
         this.changeAvailable = new HashMap<>();
 
@@ -29,6 +34,32 @@ public class VendingMachineImpl implements VendingMachine {
         this.changeAvailable.put(Change.FIFTY_PENCE, 5);
         this.changeAvailable.put(Change.ONE_POUND, 5);
         this.changeAvailable.put(Change.TWO_POUND, 5);
+    }
+
+    /**
+     * Default, powered on, vending machine
+     *
+     * @param isOn boolean Initial power state of the new machine
+     */
+    public VendingMachineImpl(boolean isOn) {
+        super();
+
+        this.isPoweredOn = isOn;
+    }
+
+    @Override
+    public boolean isPoweredOn() {
+        return this.isPoweredOn;
+    }
+
+    @Override
+    public void powerOn() {
+        this.isPoweredOn = true;
+    }
+
+    @Override
+    public void powerOff() {
+        this.isPoweredOn = false;
     }
 
     @Override
