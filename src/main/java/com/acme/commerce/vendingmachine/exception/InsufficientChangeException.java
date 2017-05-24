@@ -9,18 +9,7 @@ package com.acme.commerce.vendingmachine.exception;
  */
 public class InsufficientChangeException extends Exception {
 
-    private int errCode;
-
-    public InsufficientChangeException(int errCode, String message) {
+    public InsufficientChangeException(String message) {
         super(message);
-        this.errCode = errCode;
-    }
-
-    public int getErrCode() {
-        return errCode;
-    }
-
-    public void setErrCode(int errCode) {
-        this.errCode = errCode;
     }
 }
