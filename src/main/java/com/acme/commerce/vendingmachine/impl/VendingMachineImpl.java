@@ -3,6 +3,7 @@ package com.acme.commerce.vendingmachine.impl;
 import com.acme.commerce.vendingmachine.Change;
 import com.acme.commerce.vendingmachine.Product;
 import com.acme.commerce.vendingmachine.VendingMachine;
+import com.acme.commerce.vendingmachine.exception.ChangeNotAcceptedException;
 import com.acme.commerce.vendingmachine.exception.OutOfStockException;
 
 import java.util.*;
@@ -57,10 +58,24 @@ public class VendingMachineImpl implements VendingMachine {
     }
 
     @Override
-    public int insertChange(Change change) {
+    public int insertChange(Change change) throws ChangeNotAcceptedException {
+        if (!acceptsChangeDenomination(change)) {
+            throw new ChangeNotAcceptedException();
+        }
+
         addChange(change);
 
         return calculateChangeInserted();
+    }
+
+    /**
+     * Does this machine accept the inserted coin type?
+     *
+     * @param change
+     * @return
+     */
+    public boolean acceptsChangeDenomination(Change change) {
+        return getAcceptedChange().contains(change);
     }
 
     @Override

@@ -28,19 +28,19 @@ public class VendingMachineTest {
         int changeRunningTotal = 0;
 
         try {
-            vendingMachine.insertChange(Change.FIVE_PENCE);
-            vendingMachine.insertChange(Change.ONE_PENCE);
-            vendingMachine.insertChange(Change.TWO_PENCE);
-            vendingMachine.insertChange(Change.TWO_PENCE);
-            vendingMachine.insertChange(Change.TWO_PENCE);
-            vendingMachine.insertChange(Change.TWO_PENCE);
+            vendingMachine.insertChange(Change.TEN_PENCE);
+            vendingMachine.insertChange(Change.TEN_PENCE);
+            vendingMachine.insertChange(Change.TEN_PENCE);
+            vendingMachine.insertChange(Change.TEN_PENCE);
+            vendingMachine.insertChange(Change.TEN_PENCE);
+            vendingMachine.insertChange(Change.TEN_PENCE);
             changeRunningTotal = vendingMachine.insertChange(Change.ONE_POUND);
         } catch (ChangeNotAcceptedException e) {
             // @todo Determine what to do in this instance.
         }
 
-        assertEquals(5 + 1 + 2 + 2 + 2 + 2 + 100, changeRunningTotal);
-        assertEquals(5 + 1 + 2 + 2 + 2 + 2 + 100, vendingMachine.getBalance()); // Should both be the same result
+        assertEquals(60 + 100, changeRunningTotal);
+        assertEquals(10 + 10 + 10 + 10 + 10 + 10 + 100, vendingMachine.getBalance()); // Should both be the same result
     }
 
     @Test
